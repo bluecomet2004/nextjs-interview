@@ -1,39 +1,29 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { Inter } from "next/font/google";
+import { useEffect } from "react";
 import {
   CircularProgress
 } from "@mui/material";
 import ProfileTable from "@/components/ProfileTable";
-import Swal from "sweetalert2";
-
-const inter = Inter({ subsets: ["latin"] });
+import { useSelector } from "react-redux";
+import { useRouter } from "next/router";
 
 export default function ProfileList() {
-  const [profiles, setProfiles]: any = useState(null);
+  const { payload: profiles } = useSelector((store: any) => store.results);
+  const router = useRouter();
 
   useEffect(() => {
-    axios.get('https://randomuser.me/api?results=50')
-      .then(({data}) => {
-        setProfiles(data.results);
-      })
-      .catch(error => {
-        Swal.fire({
-          title: "Failed",
-          icon: "error",
-          text: "Cannot load the data."
-        });
-
-        console.log(error);
-      });
-  }, []);
+    if(!profiles) {
+      router.push('/');
+    }
+  }, [profiles, router]);
 
   return (
     <div className="flex flex-col items-center">
       <h1 className="font-bold text-5xl text-center pt-12">PROFILE LIST</h1>
 
       {
-        !profiles ? <CircularProgress size={72} /> : <ProfileTable profiles={profiles} />
+        !profiles ?
+          <CircularProgress size={72} className="m-8" />
+        : <ProfileTable profiles={profiles.results} />
       }
     </div>
   )

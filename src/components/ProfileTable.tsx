@@ -118,8 +118,15 @@ export default function ProfileTable(props: any) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - profiles.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - profiles.length) : 0;
+
+  const filterProfile = (profiles: any) => {
+    return profiles.filter((profile: User) => 
+      JSON
+        .stringify(profile).toUpperCase()
+        .includes(search.toUpperCase())
+    );
+  }
 
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
@@ -171,24 +178,29 @@ export default function ProfileTable(props: any) {
 
             <TableBody>
               {
-                (rowsPerPage > 0
-                  ? profiles
-                      .filter((profile: User) => JSON.stringify(profile).includes(search))
-                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  : profiles
-                  .filter((profile: User) => JSON.stringify(profile).includes(search))
-                ).map((profile: User, index: number) => (
-                <StyledTableRow key={profile.login.uuid}>
-                  <StyledTableCell>{index + 1}</StyledTableCell>
-                  <StyledTableCell>
-                    {profile.name.first} {profile.name.last}
-                  </StyledTableCell>
-                  <StyledTableCell>{profile.gender}</StyledTableCell>
-                  <StyledTableCell>{profile.nat}</StyledTableCell>
-                  <StyledTableCell>{profile.email}</StyledTableCell>
-                  <StyledTableCell>{formatDate(profile.dob.date)}</StyledTableCell>
+                filterProfile(profiles).length > 0 ?
+                  (rowsPerPage > 0
+                    ? filterProfile(profiles).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    : filterProfile(profiles)
+                  ).map((profile: User, index: number) => (
+                    <StyledTableRow key={profile.login.uuid}>
+                      <StyledTableCell>{index + 1}</StyledTableCell>
+                      <StyledTableCell>
+                        {profile.name.first} {profile.name.last}
+                      </StyledTableCell>
+                      <StyledTableCell>{profile.gender}</StyledTableCell>
+                      <StyledTableCell>{profile.nat}</StyledTableCell>
+                      <StyledTableCell>{profile.email}</StyledTableCell>
+                      <StyledTableCell>{formatDate(profile.dob.date)}</StyledTableCell>
+                    </StyledTableRow>
+                  ))
+                :
+                <StyledTableRow>
+                  <TableCell colSpan={6}>
+                    <h1 className='w-full text-3xl text-center p-4'>No matching data</h1>
+                  </TableCell>
                 </StyledTableRow>
-              ))}
+              }
               
               {emptyRows > 0 && (
                 <StyledTableRow style={{ height: 53 * emptyRows }}>
@@ -198,15 +210,17 @@ export default function ProfileTable(props: any) {
             </TableBody>
 
             <TableFooter>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                count={profiles.filter((profile: User) => JSON.stringify(profile).includes(search)).length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                ActionsComponent={TablePaginationActions}
-              />
+              <TableRow>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                  count={filterProfile(profiles).length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  ActionsComponent={TablePaginationActions}
+                />
+              </TableRow>
             </TableFooter>
           </Table>
         </TableContainer>
