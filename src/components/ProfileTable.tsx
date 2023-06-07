@@ -24,6 +24,8 @@ import { styled, useTheme } from "@mui/material/styles";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { User } from "../utils/types";
 import { formatDate } from "../utils/functions";
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -118,6 +120,7 @@ export default function ProfileTable(props: any) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  const router = useRouter();
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - profiles.length) : 0;
 
   const filterProfile = (profiles: any) => {
@@ -142,9 +145,20 @@ export default function ProfileTable(props: any) {
     setPage(0);
   };
 
+  const handleSearch = ({target:{value}}: any) => {
+    setSearch(value);
+    setPage(0);
+  }
+
+  const showDetail = (id: string) => {
+    router.push(`/profiles/${id}`);
+  }
+
   return (
     <>
-      <div className='w-full container text-right'>
+      <div className='flex justify-between items-center w-full container'>
+        <Link href={'/'} className="ml-4 hover:text-blue-500 hover:underline">BACK</Link>
+
         <TextField
           label="Search"
           variant="outlined"
@@ -157,7 +171,7 @@ export default function ProfileTable(props: any) {
             )
           }}
           value={search}
-          onChange={({target:{value}}) => setSearch(value)}
+          onChange={handleSearch}
         />
       </div>
       
@@ -183,7 +197,7 @@ export default function ProfileTable(props: any) {
                     ? filterProfile(profiles).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     : filterProfile(profiles)
                   ).map((profile: User, index: number) => (
-                    <StyledTableRow key={profile.login.uuid}>
+                    <StyledTableRow key={profile.login.uuid} onClick={() => showDetail(profile.login.uuid)}>
                       <StyledTableCell>{index + 1}</StyledTableCell>
                       <StyledTableCell>
                         {profile.name.first} {profile.name.last}

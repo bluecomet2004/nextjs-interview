@@ -14,10 +14,16 @@ export default function Home() {
   const router = useRouter();
 
   const handleCheck = () => {
-    setChecked(true);
+    if(!count || count > 200) {
+      Swal.fire({
+        icon: "error",
+        text: "Please enter a valid number."
+      });
+    } else {
+      setChecked(true);
 
-    dispatch(generateResult(count))
-      .then(() => router.push('/profile/list'))
+      dispatch(generateResult(count))
+      .then(() => router.push('/profiles'))
       .catch((error: any) => {
         Swal.fire({
           title: "Failed",
@@ -27,7 +33,8 @@ export default function Home() {
 
         setChecked(false);
         console.log(error);
-      })
+      });
+    }
   }
 
   return (
@@ -46,6 +53,7 @@ export default function Home() {
             variant="outlined"
             value={count}
             onChange={({target:{value}}: any) => setCount(value)}
+            onKeyDown={({keyCode}) => keyCode===13 && handleCheck()}
           />
 
           <Button

@@ -5,6 +5,7 @@ import {
 import ProfileTable from "@/components/ProfileTable";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 export default function ProfileList() {
   const { payload: profiles } = useSelector((store: any) => store.results);
@@ -18,12 +19,15 @@ export default function ProfileList() {
 
   return (
     <div className="flex flex-col items-center">
-      <h1 className="font-bold text-5xl text-center pt-12">PROFILE LIST</h1>
-
       {
         !profiles ?
           <CircularProgress size={72} className="m-8" />
-        : <ProfileTable profiles={profiles.results} />
+        : (
+          <>
+            <h1 className="font-bold text-5xl text-center pt-12">PROFILE LIST</h1>
+            <ProfileTable profiles={profiles.results} />
+          </>
+        )
       }
     </div>
   )
