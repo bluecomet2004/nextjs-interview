@@ -47,7 +47,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   }
 }));
 
-interface TablePaginationActionsProps {
+interface TablePaginationActionsProps {  // Table Component Interface
   count: number;
   page: number;
   rowsPerPage: number;
