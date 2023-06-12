@@ -3,4 +3,6 @@ const nextConfig = {
   reactStrictMode: true,
 }
 
+// here we should change something
+
 module.exports = nextConfig
